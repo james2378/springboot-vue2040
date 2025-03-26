@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.MinshuDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.minshu_name as minshuName
+        ,a.minshu_photo as minshuPhoto
+        ,a.minshu_types as minshuTypes
+        ,a.minshu_content as minshuContent
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.MinshuView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+
+        FROM minshu  a
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.minshuName != '' and params.minshuName != null and params.minshuName != 'null' ">
+                and a.minshu_name like CONCAT('%',#{params.minshuName},'%')
+            </if>
+            <if test="params.minshuTypes != null and params.minshuTypes != ''">
+                and a.minshu_types = #{params.minshuTypes}
+            </if>
+            <if test=" params.minshuContent != '' and params.minshuContent != null and params.minshuContent != 'null' ">
+                and a.minshu_content like CONCAT('%',#{params.minshuContent},'%')
+            </if>
+
+        </where>
+
+        order by a.${params.orderBy} desc 
+    </select>
+
+</mapper>
